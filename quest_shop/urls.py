@@ -60,6 +60,8 @@ admin_site_url = [
 #products
     url(r'product/list/(?P<shopId>[^/.]+)/$', product.index, name='admin-product-list'),
     url(r'^product/create/(?P<shopId>[^/.]+)/$', product.create, name='product-create'),
+
+
 ]
 
 

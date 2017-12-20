@@ -33,14 +33,51 @@ class ImagesSerializer(serializers.ModelSerializer):
         fields = ('id', 'src', 'name')
 
 
+
+
+
+class ShopSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    # products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Shop
+        fields = ('id',
+                  'name',
+                  # 'products',
+                  'logo',
+                  'owner',
+                  'latitude',
+                  'longitude',
+                  'address')
+
+
+
+    def get_owner(self, instance):
+        return UserSerializer(instance.owner).data
+
+    # def get_products(self, instance):
+    #     products = Product.objects.filter(shop=instance)
+    #     if products:
+    #         products1 = ProductSerializer(products).data
+    #     return products1
+
+
+
+    def save(self, **kwargs):
+        super(Shop, self).save(**kwargs)
+
+
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     images = serializers.SerializerMethodField()
+    shop = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ('id',
+                  'shop',
                   'name',
                   'price',
                   'tags',
@@ -59,6 +96,8 @@ class ProductSerializer(serializers.ModelSerializer):
             images = ImagesSerializer(images, many=True).data
         return images
 
+    def get_shop(self, instance):
+        return ShopSerializer(instance.shop).data
 
 class PromotionSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
@@ -76,48 +115,6 @@ class PromotionSerializer(serializers.ModelSerializer):
 
     def get_image(self, instance):
         return ImagesSerializer(instance.image).data
-
-
-
-class ShopSerializer(serializers.ModelSerializer):
-    images = serializers.SerializerMethodField()
-    owner = serializers.ReadOnlyField(source='owner.username')
-    products = ProductSerializer(many=True)
-    categories = CategorySerializer(many=True)
-
-    class Meta:
-        model = Shop
-        fields = ('id',
-                  'name',
-                  'products',
-                  'images',
-                  'categories',
-                  'owner',
-                  'latitude',
-                  'longitude',
-                  'address')
-
-    def get_images(self, instance):
-        return ImagesSerializer(instance.images).data
-
-    def get_owner(self, instance):
-        return UserSerializer(instance.owner).data
-
-    def get_products(self, instance):
-        products = Product.objects.filter(shop=instance)
-        if products:
-            products = ProductSerializer(products).data
-        return products
-
-    def get_categories(self, instance):
-        categories = Category.objects.filter(product=instance.product)
-        if categories:
-            categories = CategorySerializer(categories).data
-        return categories;
-
-    def save(self, **kwargs):
-        super(Shop, self).save(**kwargs)
-
 
 
 class ProfileSerializer(serializers.ModelSerializer):

@@ -44,3 +44,6 @@ class CreateProductForm(forms.Form):
 
     images = forms.ImageField(required=False,
                               widget=forms.FileInput(attrs={'placeholder':'Images',   'multiple':'true'}))
+
+    promotion = forms.BooleanField(required=True,
+                                   widget=forms.RadioSelect(attrs={'placeholder':'Is Promotion', 'class': 'form-control'}))

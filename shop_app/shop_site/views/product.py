@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from shop_app.models import Product, Tag, Category, Image, Shop
+from shop_app.models import Product, Tag, Category, Image, Shop, Promotion
 from shop_app.shop_site.forms.product import CreateProductForm
 
 def create(request, shopId):
@@ -22,6 +22,7 @@ def create(request, shopId):
             model = request.POST['serial']
             description = request.POST['description']
             images = request.FILES['images']
+            promotion = request.POST['promotion']
             # published = request.POST['published']
 
             shop = Shop.objects.get(id=shopId)
@@ -42,6 +43,10 @@ def create(request, shopId):
     #         Capturar las imagenes y crear la entrada en la base de datos...
             images_file = Image.objects.create(src=images, name=name, product=product)
             images_file.save()
+
+            if promotion == True:
+                prom = Promotion.objects.create(image=images_file, name=name, product=product)
+                prom.save()
 
     else:
         form = CreateProductForm()
